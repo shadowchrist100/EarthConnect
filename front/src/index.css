@@ -1,0 +1,83 @@
+@import "tailwindcss";
+.bg-gradient-subtle {
+    background-image: linear-gradient(180deg, hsl(220 15% 12%), hsl(220 15% 15%));
+}
+.bg-gradient-primary {
+    background-image: linear-gradient(135deg, hsl(280 85% 65%), hsl(320 60% 60%));
+}
+.bg-background{
+    background-color: hsl(220, 15%, 12%);
+}
+.bg-card{
+    background-color: hsl(220, 15%, 15%);
+}
+.bg-gradient-card{
+    background-image: linear-gradient(145deg, hsl(220 15% 15%), hsl(220 15% 18%));
+}
+.bg-primary{
+    background-color: hsl(280, 85%, 65%);
+}
+.bg-destructive{
+    background-color: hsl(0 ,70%, 60%);
+}
+.bg-sidebar-accent{
+    background-color: hsl(220, 15%, 18%);
+}
+.bg-gradient-accent{
+    background-image: linear-gradient(135deg, hsl(45 95% 70%), hsl(320 60% 60%));
+}
+.text-foreground{
+    color: hsl(0, 0%, 95%);
+}
+.text-muted-foreground{
+    color: hsl(0, 0%, 60%);
+}
+.text-card-foreground{
+    color:hsl(0, 0%, 95%);
+}
+.text-primary{
+    color: hsl(280, 85%, 65%);
+}
+.text-primary-foreground{
+    color: hsl(0, 0%, 95%);
+}
+.text-destructive-foreground{
+    color: hsl(0, 0%, 95%);
+}
+.text-accent{
+    color: hsl(45, 95%, 70%);
+}
+.text-sidebar-foreground{
+    color:hsl(0, 0%, 95%);
+}
+.border-input{
+    border-color:hsl(220,  15%, 18%)
+}
+.border-primary{
+    border-color: hsl(280 85% 65%);
+}
+.border-sidebar-border{
+    border-color: hsl(220, 15%, 20%);
+}
+.bg-accent{
+    background-color: hsl(45, 95%, 70%);
+}
+.ring-custom {
+    --tw-ring-color: hsl(280 85% 65%); 
+}
+.ring-primary{
+    --tw-ring-color:hsl(280 85% 65%);
+}
+.ring-offset-background{
+    --tw-ring-offset-color:hsl(220,15%,12%);
+}
+.shadow-soft{
+    --tw-shadow:0 4px 20px -4px hsl(0 0% 0%/.4)
+}
+.scrollbar-hide{
+    scrollbar-width: none;
+}
+.shadow-card{
+    --tw-shadow-color:hsl(220 15% 15%);
+    --tw-shadow:0 1px 2px 0 hsl(220 15% 15%);
+}
