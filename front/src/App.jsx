@@ -1,26 +1,33 @@
-import Login from './Login.jsx';
-import Register from './Register.jsx'
-import Home from './Home.jsx'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import AuthComponent from "./components/AuthComponent.jsx";
+import Login from './components/Auth/Login.jsx';
+import Register from './components/Auth/Register.jsx'
+import Home from './components/Home.jsx'
+import AuthProvider from "./components/AuthContext.jsx";
 
 
 
 function App() {
-  let Component 
-  switch(window.location.pathname){
-    case "/":
-      Component=Home
-      break;
-    case "/Login":
-      Component=Login
-      break;
-    case "/Register" :
-      Component=Register
-      break;
-  }
-    
-  return (
-    <Component />
-  )
+    return (
+        <AuthProvider>
+            <BrowserRouter>
+                <Routes>
+                    
+                    {/* routes publics:authentification */}
+                    <Route path="/Login" element= {<Login />} />
+                    <Route path="/Register" element= {<Register />} />
+
+                    {/* routes prive: page user */}
+                    <Route path="/" element= {
+                        <AuthComponent>
+                            <Home />
+                        </AuthComponent>
+                    } />
+                </Routes>
+            </BrowserRouter>
+        </AuthProvider>
+    )
 }
 
 export default App

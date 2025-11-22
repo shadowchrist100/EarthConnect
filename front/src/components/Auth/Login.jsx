@@ -9,7 +9,7 @@ return (
             <p className='text-lg text-muted-foreground leading-relaxed'>
                 Créer votre compte et rejoignez une communauté engagée.Partager vos passions et découvrer de nouvelles inspirations
             </p>
-            <img className='rounded-2xl shadow-medium w-full max-w-sm mx-auto ' src="" alt="" />
+            <img className='rounded-2xl shadow-medium w-full max-w-sm mx-auto ' src="#" alt="" />
         </div>
     </div>
 )}
@@ -69,7 +69,7 @@ return (
         </div>
         <div className="text-center text-sm">
         <span className="text-muted-foreground">Pas encore de compte ?</span>
-        <a href="" className="text-primary hover:underline font-medium"> Creer un compte</a>
+        <a href="/Register" className="text-primary hover:underline font-medium"> Creer un compte</a>
         </div>
     </div>
     </div>
