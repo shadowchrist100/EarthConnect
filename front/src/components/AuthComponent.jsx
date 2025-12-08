@@ -3,7 +3,7 @@ import { AuthContext } from "./AuthContext";
 import { Navigate } from "react-router-dom";
 
 const AuthComponent = (props)=>{
-    const {children}= props;
+    const { children }= props;
 
     const user=useContext(AuthContext);
 

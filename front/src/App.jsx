@@ -4,7 +4,7 @@ import AuthComponent from "./components/AuthComponent.jsx";
 import Login from './components/Auth/Login.jsx';
 import Register from './components/Auth/Register.jsx'
 import Home from './components/Home.jsx'
-import AuthProvider from "./components/AuthContext.jsx";
+import { AuthProvider } from "./components/AuthContext.jsx";
 
 
 
