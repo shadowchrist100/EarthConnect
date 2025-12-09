@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Password;
+// use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -21,7 +22,7 @@ class AuthController extends Controller
         ]);
         try{
             if(! $token= JWTAuth::attempt($validated)) {
-            return response()->json(['error' => 'invalid credential'], 422);
+            return response()->json(['error' => 'invalid credential'], 401);
             }
         }catch(JWTException $e) {
             return response()->json(['error' => 'could not create token']);
@@ -31,9 +32,9 @@ class AuthController extends Controller
 
     public function register(Request $request){
         $validated= $request->validate([
-            'name' =>['required, max:50'],
-            'firstname' =>['required, max:50'],
-            'email' =>['required, email, unique:users, max:50'],
+            'name' =>['required', 'max:50'],
+            'firstname' =>['required', 'max:50'],
+            'email' =>['required', 'email', 'unique:users', 'max:50'],
             'password' =>['required', 'confirmed', Password::min(8)]
         ]);
         $user= User::create($validated);
