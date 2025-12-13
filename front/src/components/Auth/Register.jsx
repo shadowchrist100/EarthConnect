@@ -1,28 +1,85 @@
+import { Navigate } from "react-router-dom";
+
 const handleSubmit = (e)=>{
     e.preventDefault();
     const formData= new FormData(e.target);
-    const jsonBody= JSON.stringify(Object.fromEntries(formData.entries()));
-
-    fetch("/api/register", {
-        method: 'POST',
-        headers:{
-            'Content-Type': 'application/json'
-        },
-        body: jsonBody
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Une erreur est survenue code: ${response.status}`);
-        }
-        response.json();
-    })
-    .then(donnees => {
-        console.log(donnees);
-    })
-    .catch(error => {
-        console.error("Une erreur: ", error);
-    })
+    const name= formData.get('lastname');
+    const firstname= formData.get('firstname');
+    const pseudo= formData.get('pseudo');
+    const mail= formData.get('email');
+    const password= formData.get('password');
+    const password_confirm= formData.get('password_confirmation');
     
+    const nameError= document.getElementById("name_error");
+    const firstnameError= document.getElementById("firstname_error");
+    const pseudo_error= document.getElementById("pseudo_error");
+    const emailError= document.getElementById("email_error");
+    const passwordError= document.getElementById("password_error");
+    const passwordConfirmError= document.getElementById("password_confirm_error");
+
+    let is_valid= true;
+
+    const nameRegex= /^[\w]{1,30}$/
+    if (!nameRegex.test(name)) {
+        nameError.textContent="Entrer un nom valide de moins de 30 caractères"
+        is_valid= false;
+    }
+
+    if (!nameRegex.test(firstname)) {
+        firstnameError.textContent= "Entrer un prenom valide";
+        is_valid= false;
+    }
+
+    const pseudoRegex= /^[\w\d]{1,30}/
+    if (!pseudoRegex.test(pseudo)) {
+        pseudo_error.textContent= "Entrer un pseudo valide";
+        is_valid= false;
+    }
+
+    const emailRegex= /^[\d\w.-]+@+[a-zA-Z-.\d]+\.[a-z]{1,3}$/ 
+    if (!emailRegex.test(mail)) {
+        emailError.textContent= "Entrer un email valide";
+        is_valid= false;
+    }
+
+    const passwordRegex= /^(?=.*[a-z])(?=.*[A-Z])(?:=.*\d)(?=.*[@$!%?&])[a-zA-Z\d@$!%?&]{8,}$/
+    if (!passwordRegex.test(password)) {
+        passwordError.textContent= "Entrer un mot de passe d'au moins 8 caractères avec au moins une majuscule, une minuscule, un nombre, un caractère spécial"
+        is_valid= false;
+    }
+
+    if (password != password_confirm) {
+        passwordConfirmError.textContent= "Les mots de passe ne correspondent pas"
+        is_valid= false;
+    }
+
+    if (is_valid) {
+        const jsonBody= JSON.stringify(Object.fromEntries(formData.entries()));
+        fetch("/api/register", {
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'Accept' : 'application/json'
+            },
+            body: jsonBody,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Une erreur est survenue code: ${response.status}`);
+            }
+            else{
+                <Navigate to={'/Profile'}/>
+            }
+            response.json();
+        })
+        .then(donnees => {
+            console.log(donnees);
+        })
+        .catch(error => {
+            console.error("Une erreur: ", error);
+        })
+    }
+
 }
 
 const Presentation = () => {
@@ -36,7 +93,7 @@ const Presentation = () => {
                 <p className='text-lg text-muted-foreground leading-relaxed'>
                     Créer votre compte et rejoignez une communauté engagée.Partager vos passions et découvrer de nouvelles inspirations
                 </p>
-                <img className='rounded-2xl shadow-medium w-full max-w-sm mx-auto ' src="" alt="" />
+                <img className='rounded-2xl shadow-medium w-full max-w-sm mx-auto ' src="image.jpeg" alt="image register" />
             </div>
         </div>
     )
@@ -57,45 +114,55 @@ const Form = () => {
                                 <label htmlFor="lastname" className='text-sm font-medium leading-none peer-disabled:opacity-70'>Nom</label>
                                 <div className="relative mt-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-user-icon lucide-user absolute left-3 transform -translate-y-1/2 w-4 h-4 top-1/2 text-muted-foreground"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                                    <input type="text" id="lastname" className="ring-custom flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 md:text-sm pl-10 " placeholder="Nom" />
+                                    <input maxLength={30} required name="lastname" type="text" id="lastname" className="ring-custom flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 md:text-sm pl-10 " placeholder="Nom" />
                                 </div>
+                                <span id="name_error" className="error_message"></span>
                             </div>
                             <div className='space-y2'>
                                 <label htmlFor="firstname">Prenom</label>
-                                <input type="text" id="firstname" className="mt-2 ring-custom flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 md:text-sm  " placeholder="Prenom" />
+                                <input maxLength={30} required name="firstname" type="text" id="firstname" className="mt-2 ring-custom flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 md:text-sm  " placeholder="Prenom" />
+                                <span id="firstname_error" className="error_message"></span>
+                            </div>
+                            <div className='space-y2'>
+                                <label htmlFor="pseudo">Pseudo</label>
+                                <input maxLength={30} required name="pseudo" type="text" id="pseudo" className="mt-2 ring-custom flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 md:text-sm  " placeholder="Prenom" />
+                                <span id="pseudo_error" className="error_message"></span>
                             </div>
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 " >Email</label>
                             <div className="relative mt-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-mail-icon lucide-mail absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground "><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" /><rect x="2" y="4" width="20" height="16" rx="2" /></svg>
-                                <input type="email" id="email" placeholder="votre@email.com" className="ring-custom flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 file:text-foreground placeholder:text-muted-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2   disabled:opacity-50 md:text-sm pl-10 " />
+                                <input required name="email" type="email" id="email" placeholder="votre@email.com" className="ring-custom flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 file:text-foreground placeholder:text-muted-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2   disabled:opacity-50 md:text-sm pl-10 " />
                             </div>
+                            <span id="email_error" className="error_message"></span>
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 " >Mot de passe</label>
                             <div className="relative mt-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-lock-icon lucide-lock absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground "><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-                                <input type="password" id="password" placeholder="......." className="ring-custom flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 md:text-sm pl-10 pr-10 disabled:cursor-not-allowed" />
+                                <input required name="password" type="password" id="password" placeholder="......." className="ring-custom flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 md:text-sm pl-10 pr-10 disabled:cursor-not-allowed" />
                                 <button type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 ring-custom focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 rounded-xl absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0 ">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-eye-icon lucide-eye w-4 h-4 "><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>
                                 </button>
                             </div>
+                            <span id="password_error" className="error_message"></span>
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="confirmPassword" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Confirmer le mot de passe</label>
                             <div className="relative mt-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-lock-icon lucide-lock absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground "><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-                                <input type="password" className="ring-custom flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 md:text-sm pl-10 pr-10 disabled:cursor-not-allowed" />
+                                <input required name="password_confirmation" type="password" className="ring-custom flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 md:text-sm pl-10 pr-10 disabled:cursor-not-allowed" />
                                 <button type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 ring-custom focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 rounded-xl absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0 ">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-eye-icon lucide-eye w-4 h-4 "><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>
                                 </button>
                             </div>
+                            <span id="password_confirm_error" className="error_message"></span>
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center space-x-2">
                                 <button type="button" className="peer h-4 w-4 shrink-0 rounded-2xl border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 ring-custom focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 text-primary-foreground " ></button>
-                                <input role="checkbox" type="checkbox" name="" id="terms" className="absolute transform -translate-x-full m-0 w-4 h-4 opacity-0 data-[state=checked]:bg-primary " />
+                                <input   role="checkbox" type="checkbox" name="" id="terms" className="absolute transform -translate-x-full m-0 w-4 h-4 opacity-0 data-[state=checked]:bg-primary " />
                                 <label htmlFor="terms" className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm text-muted-foreground">
                                     J'accepte les <a href="" className="text-primary hover:underline">les conditions d'utilisation </a>
                                     et la <a href="" className="text-primary hover:underline">politique de confidentialité</a>
@@ -122,7 +189,7 @@ const Form = () => {
                     </div>
                     <div className="text-center text-sm">
                         <span className="text-muted-foreground">Déja un compte ?</span>
-                        <a href="" className="text-primary hover:underline font-medium">Se connecter</a>
+                        <a href="/login" className="text-primary hover:underline font-medium">Se connecter</a>
                     </div>
                 </div>
             </div>

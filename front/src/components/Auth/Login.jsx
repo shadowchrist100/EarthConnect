@@ -1,31 +1,58 @@
-import { data } from "react-router-dom";
+import { useContext } from "react";
+import { data, Navigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
 
 const handleSubmit = (e)=>{
     e.preventDefault();
     const formData= new FormData(e.target);
-    const jsonBody= JSON.stringify(Object.fromEntries(formData.entries())); 
-    console.log(jsonBody);
-    
-    
-    fetch("/api/login", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: jsonBody,
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Erreur survenu code: ${response.status}`);
-        }
-        response.json()
-    })
-    .then(donnee => {
-        console.log(donnee);
-    })
-    .catch(error => {
-        console.log("Une erreur est survenue :", error);
-    })
+    const mail= formData.get('email');
+    const password= formData.get('password');
+
+    const emailError= document.getElementById("email_error");
+    const passwordError= document.getElementById("password_error");
+
+    let is_valid= true;
+
+    const emailRegex= /^[\d\w.-]+@+[a-zA-Z-.\d]+\.[a-z]{1,3}$/ 
+    if (!emailRegex.test(mail)) {
+        emailError.textContent= "Entrer un email valide";
+        is_valid= false;
+    }
+
+    const passwordRegex= /^(?:=.*[a-z])(?:=.*[A-Z])(?:=.*\d)(?:=.*[@$!%?&])[a-zA-Z\d@$!%?&]{8,}$/
+    if (!passwordRegex.test(password)) {
+        passwordError.textContent= "Entrer un mot de passe d'au moins 8 caractères avec au moins une majuscule, une minuscule, un nombre, un caractère spécial"
+        is_valid= false;
+    }
+
+    if (is_valid) {
+        const jsonBody= JSON.stringify(Object.fromEntries(formData.entries())); 
+        
+        fetch("/api/login", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: jsonBody,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erreur survenu code: ${response.status}`);
+            }
+            else{
+                const login = useContext(AuthContext);
+                // login()
+            }
+            response.json()
+        })
+        .then(donnee => {
+            console.log(donnee);
+        })
+        .catch(error => {
+            console.log("Une erreur est survenue :", error);
+        })
+    }    
     
 }
 
@@ -62,6 +89,7 @@ const Form = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail-icon lucide-mail absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground "><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" /><rect x="2" y="4" width="20" height="16" rx="2" /></svg>
                                 <input name="email" type="email" id="email" placeholder="votre@email.com" className="ring-custom flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base file:text-sm file:font-medium file:bg-transparent file:border-0 file:text-foreground placeholder:text-muted-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2   disabled:opacity-50 md:text-sm pl-10 " />
                             </div>
+                            <span id="email_error" className="error_message"></span>
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 " >Mot de passe</label>
@@ -72,6 +100,7 @@ const Form = () => {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-icon lucide-eye w-4 h-4 "><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>
                                 </button>
                             </div>
+                            <span id="password_error" className="error_message"></span>
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between text-sm">
